@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%= htmlWebpackPlugin.tags.headTags %>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= htmlWebpackPlugin.options.title %></title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <form id="csvUpload">
+      <input type="file" name="csv-file-input" id="csv-file-input">
+      <a id="download-link">Download</a>
+    </form>
+    <%= htmlWebpackPlugin.tags.bodyTags %>
+  </body>
+</html>

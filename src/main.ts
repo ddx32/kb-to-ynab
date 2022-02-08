@@ -1,9 +1,9 @@
-// import "./style.css";
+import "./style.css";
 import iconv from "iconv-lite";
 import { arrayBufferToBuffer } from "./arrayBufferToBuffer";
 import getYnabCsv from "./getYnabCsv";
 
-const fileInput = document.querySelector<HTMLDivElement>("#csv-file-input")!;
+const dropZone = document.querySelector<HTMLDivElement>("#drop-zone")!;
 
 function createDownload(textContents: string): void {
   const blob = new Blob([textContents], { type: "text/csv;charset=utf-8" });
@@ -17,30 +17,48 @@ function createDownload(textContents: string): void {
 
   downloadLink.download = filename;
   downloadLink.href = url;
+  downloadLink.classList.remove("hidden");
 }
 
-fileInput.addEventListener("change", (event: Event) => {
-  if (!event || !event.target || !event.target) {
+document.addEventListener("dragover", function (event) {
+  event.preventDefault();
+});
+
+dropZone.addEventListener("dragenter", (event: DragEvent) => {
+  event.preventDefault();
+  dropZone.classList.add("dragover-active");
+});
+
+dropZone.addEventListener("dragleave", (event: Event) => {
+  event.preventDefault();
+  dropZone.classList.remove("dragover-active");
+});
+
+dropZone.addEventListener("drop", (event: DragEvent) => {
+  event.preventDefault();
+
+  dropZone.classList.remove("dragover-active");
+
+  if (
+    !event.dataTransfer ||
+    !event.dataTransfer.items ||
+    event.dataTransfer.items.length !== 1
+  ) {
     return;
   }
 
-  const inputElement = event.target as HTMLInputElement;
-  const fileList = inputElement.files as FileList;
-  if (fileList.length !== 1) {
+  const item = event.dataTransfer.items[0];
+
+  if (item.kind !== "file" || item.type !== "text/csv") {
+    console.error("Error, go home");
     return;
   }
 
-  const reader = new FileReader();
-  reader.addEventListener("load", (event: ProgressEvent<FileReader>) => {
-    if (!event.target) {
-      return;
-    }
+  const file = <File>item.getAsFile();
 
-    const arrayBuffer = <ArrayBuffer>event.target.result;
-
+  file.arrayBuffer().then((arrayBuffer) => {
     const fileBuffer = arrayBufferToBuffer(arrayBuffer);
     const decodedString = iconv.decode(fileBuffer, "win1250");
     getYnabCsv(decodedString).then(createDownload);
   });
-  reader.readAsArrayBuffer(fileList[0]);
 });

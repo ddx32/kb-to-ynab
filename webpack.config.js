@@ -28,6 +28,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "src/index.html",
+      title: "KB to YNAB CSV converter",
     }),
   ],
   devServer: {

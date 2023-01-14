@@ -20,17 +20,18 @@ function createDownload(textContents: string): void {
   downloadLink.classList.remove("hidden");
 }
 
-document.addEventListener("dragover", function (event) {
+/**
+ * Disable the default browser ondrop behavior
+ */
+document.addEventListener("dragover", (event: DragEvent) => {
   event.preventDefault();
 });
 
-dropZone.addEventListener("dragenter", (event: DragEvent) => {
-  event.preventDefault();
+dropZone.addEventListener("dragenter", () => {
   dropZone.classList.add("dragover-active");
 });
 
-dropZone.addEventListener("dragleave", (event: Event) => {
-  event.preventDefault();
+dropZone.addEventListener("dragleave", () => {
   dropZone.classList.remove("dragover-active");
 });
 
@@ -39,11 +40,7 @@ dropZone.addEventListener("drop", (event: DragEvent) => {
 
   dropZone.classList.remove("dragover-active");
 
-  if (
-    !event.dataTransfer ||
-    !event.dataTransfer.items ||
-    event.dataTransfer.items.length !== 1
-  ) {
+  if (event.dataTransfer?.items.length !== 1) {
     return;
   }
 
